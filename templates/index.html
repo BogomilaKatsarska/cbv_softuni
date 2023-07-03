@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>{{ title }}</h1>
+From FBV
+{% for employee in employees %}
+    {{ employee.first_name }}
+{% endfor %}
+
+NEW:
+<ul>
+{% for employee in employees %}
+    <li>
+<a href="{% url 'employee details' pk=employee.pk %}">
+    {{ employee.first_name }}
+</a>
+   </li>
+   {% endfor %}
+
+<a href="{% url 'employee create' %}" >Create employee</a>
+</ul>
+
+</body>
+</html>
