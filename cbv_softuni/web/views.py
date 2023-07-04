@@ -1,6 +1,7 @@
 import random
 from django import views, forms
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.views import generic as views
 
 from django.shortcuts import render
@@ -98,10 +99,46 @@ class EmployeeDetailsView(views.DetailView):
 class EmployeeCreateView(views.CreateView):
     template_name = 'employees/create.html'
     model = Employee
-    # fields = '__all__'
+    fields = '__all__'
+    #below: you need to add info for everything in the form(need to exclude the above 'all')
+    #form_class = EmployeeCreateForm()
 
-    form_class = EmployeeCreateForm()
+    def get_success_url(self):
+        return reverse_lazy('employee details', kwargs={
+            'pk': self.object.pk,
+        })
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        for name, field in form.fields.items():
+            field.widget.attrs['placeholder'] = 'Enter' + name
+
+        return form
+
+    #below is static url
+    #success_url = '/'
+
+    #dynamic url
 
     #we use below for debug
     # def get(self, *args, **kwargs):
     #     return super().get(*args, **kwargs)
+
+
+class EmployeeUpdateView(views.UpdateView):
+    model = Employee
+    fields = '__all__'
+    template_name = 'employees/edit.html'
+
+    def get_success_url(self):
+        return reverse_lazy('employee details', kwargs={
+            'pk': self.object.pk,
+        })
+
+    def dispatch(self, request, *args, **kwargs):
+        #used to controll access
+        #if the profile to update is the same as the user logged in - continue.
+        # else: 401 unauthorized
+        return super().dispatch(request, *args, **kwargs)
+
+
